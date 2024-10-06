@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:weather_app_1/models/weather_data.dart';
 
 class WeatherHome extends StatelessWidget {
   const WeatherHome({super.key});
 
-  dynamic fetchWeatherData() async {
+  Future<WeatherData> fetchWeatherData() async {
     Dio dio = Dio();
 
     const lat = 50.6095001;
@@ -13,7 +14,7 @@ class WeatherHome extends StatelessWidget {
     var response = await dio.get(
         'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lng&current_weather=true');
 
-    return response.data;
+    return WeatherData.fromJson(response.data);
   }
 
   @override
@@ -25,12 +26,12 @@ class WeatherHome extends StatelessWidget {
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: Center(
-        child: FutureBuilder<dynamic>(
+        child: FutureBuilder<WeatherData>(
           future: fetchWeatherData(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Text(
-                  "Température : ${snapshot.data!['current_weather']['temperature']} °C");
+                  "Température : ${snapshot.data!.currentWeather.temperature} °C");
             } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
             }
