@@ -9,7 +9,7 @@ class WeatherData {
   final double latitude;
   final double longitude;
 
-  @JsonKey(name: 'current_weather')
+  @JsonKey(name: 'current')
   final WeatherCurrent currentWeather;
 
   WeatherData({
