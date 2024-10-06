@@ -8,8 +8,6 @@ class WeatherService {
   final lng = 3.1337447;
 
   Future<WeatherData> fetchWeatherData() async {
-    await Future.delayed(const Duration(seconds: 2));
-
     var response = await dio
         .get('https://api.open-meteo.com/v1/forecast', queryParameters: {
       'latitude': lat,
