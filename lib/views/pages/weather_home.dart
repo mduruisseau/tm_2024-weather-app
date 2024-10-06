@@ -1,45 +1,52 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_app_1/models/weather_data.dart';
-import 'package:weather_app_1/views/widgets/weather_image.dart';
+import 'package:weather_app_1/services/weather_service.dart';
+import 'package:weather_app_1/views/weather_info.dart';
 
-class WeatherHome extends StatelessWidget {
+class WeatherHome extends StatefulWidget {
   const WeatherHome({super.key});
 
-  Future<WeatherData> fetchWeatherData() async {
-    Dio dio = Dio();
+  @override
+  State<WeatherHome> createState() => _WeatherHomeState();
+}
 
-    const lat = 50.6095001;
-    const lng = 3.1337447;
-    var response = await dio
-        .get('https://api.open-meteo.com/v1/forecast', queryParameters: {
-      'latitude': lat,
-      'longitude': lng,
-      'timezone': 'Europe/Berlin',
-      'current': [
-        'temperature_2m',
-        'relative_humidity_2m',
-        'apparent_temperature',
-        'is_day',
-        'precipitation',
-        'rain',
-        'showers',
-        'snowfall',
-        'weather_code',
-        'cloud_cover',
-        'pressure_msl',
-        'surface_pressure',
-        'wind_speed_10m',
-        'wind_direction_10m',
-        'wind_gusts_10m'
-      ].join(','),
+class _WeatherHomeState extends State<WeatherHome> {
+  bool firstFetch = true;
+  bool loading = false;
+  WeatherData? weatherData;
+
+  void fetchData() async {
+    setState(() {
+      loading = true;
     });
 
-    return WeatherData.fromJson(response.data);
+    WeatherData data = await WeatherService().fetchWeatherData();
+
+    setState(() {
+      weatherData = data;
+      loading = false;
+      firstFetch = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget content = ElevatedButton(
+      onPressed: fetchData,
+      child: const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text("Charger les données"),
+      ),
+    );
+
+    if (loading) {
+      content = const CircularProgressIndicator();
+    } else if (weatherData != null) {
+      content = WeatherInfo(weatherData: weatherData!);
+    } else if (!firstFetch) {
+      content = const Text("Aucune donnée / erreur");
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Météo"),
@@ -47,58 +54,16 @@ class WeatherHome extends StatelessWidget {
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: Center(
-        child: FutureBuilder<WeatherData>(
-          future: fetchWeatherData(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final weatherData = snapshot.data!;
-
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: WeatherImage(
-                        weatherCode: weatherData.currentWeather.weatherCode),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                          "Température : ${weatherData.currentWeather.temperature}°C"),
-                      Text(
-                          "Humidité : ${weatherData.currentWeather.relativeHumidity}%"),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                          "Vitesse du vent : ${weatherData.currentWeather.windSpeed} km/h"),
-                      Text(
-                          "Direction du vent : ${weatherData.currentWeather.windDirection}°"),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text("Pluie : ${weatherData.currentWeather.rain} mm"),
-                      Text(
-                          "Nuage : ${weatherData.currentWeather.cloudCover} %"),
-                    ],
-                  ),
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
-            }
-
-            return const CircularProgressIndicator();
-          },
-        ),
+        child: content,
       ),
+      floatingActionButton: firstFetch
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: loading ? null : fetchData,
+              label: const Text("Rafraîchir"),
+              icon: const Icon(Icons.refresh),
+              disabledElevation: 0,
+            ),
     );
   }
 }
