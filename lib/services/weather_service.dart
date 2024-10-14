@@ -4,10 +4,10 @@ import 'package:weather_app_1/models/weather_data.dart';
 class WeatherService {
   final Dio dio = Dio();
 
-  final lat = 50.6095001;
-  final lng = 3.1337447;
-
-  Future<WeatherData> fetchWeatherData() async {
+  Future<WeatherData> fetchWeatherData({
+    required double lat,
+    required double lng,
+  }) async {
     await Future.delayed(const Duration(seconds: 2));
 
     var response = await dio
@@ -31,6 +31,16 @@ class WeatherService {
         'wind_speed_10m',
         'wind_direction_10m',
         'wind_gusts_10m'
+      ].join(','),
+      'daily': [
+        'weather_code',
+        'temperature_2m_max',
+        'temperature_2m_min',
+        'sunrise',
+        'sunset',
+        'daylight_duration',
+        'uv_index_max',
+        'precipitation_sum'
       ].join(','),
     });
 

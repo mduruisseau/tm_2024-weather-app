@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class WeatherImage extends StatelessWidget {
   final double weatherCode;
+  final double size;
 
-  const WeatherImage({super.key, required this.weatherCode});
+  const WeatherImage({super.key, required this.weatherCode, this.size = 150});
 
   String weatherCodeToImage(double weatherCode) {
     if (weatherCode <= 1) {
@@ -33,7 +34,7 @@ class WeatherImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: size,
       child: Image.asset(weatherCodeToImage(weatherCode)),
     );
   }

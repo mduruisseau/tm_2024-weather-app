@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:weather_app_1/views/pages/weather_home.dart';
 
-void main() {
+void main() async {
+  await initializeDateFormatting('fr_FR', null);
   runApp(const WeatherApp());
 }
 
