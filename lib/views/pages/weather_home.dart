@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather_app_1/cubit/weather_cubit.dart';
 import 'package:weather_app_1/models/weather_data.dart';
 import 'package:weather_app_1/services/weather_service.dart';
 import 'package:weather_app_1/views/widgets/coordinate_form_field.dart';
@@ -12,57 +14,17 @@ class WeatherHome extends StatefulWidget {
 }
 
 class _WeatherHomeState extends State<WeatherHome> {
-  bool firstFetch = true;
-  bool loading = false;
-  WeatherData? weatherData;
-
   bool latValid = true;
   bool lngValid = true;
 
   final latController = TextEditingController(text: "50.6095001");
   final lngController = TextEditingController(text: "3.1337447");
 
-  void fetchData() async {
-    setState(() {
-      loading = true;
+  void fetchData(WeatherCubit cubit) async {
+    double lat = double.parse(latController.text);
+    double lng = double.parse(lngController.text);
 
-      if (!firstFetch) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Chargement en cours..."),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    });
-
-    WeatherData data = await WeatherService().fetchWeatherData(
-      lat: double.parse(latController.text),
-      lng: double.parse(lngController.text),
-    );
-
-    setState(() {
-      weatherData = data;
-      loading = false;
-      firstFetch = false;
-
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Chargement terminé !"),
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.green,
-        ),
-      );
-    });
-  }
-
-  void reset() {
-    setState(() {
-      firstFetch = true;
-      weatherData = null;
-    });
+    cubit.fetchData(lat: lat, lng: lng);
   }
 
   @override
@@ -102,23 +64,16 @@ class _WeatherHomeState extends State<WeatherHome> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = buildForm();
-
-    if (firstFetch && loading) {
-      content = const CircularProgressIndicator();
-    } else if (weatherData != null) {
-      content = WeatherDisplay(weatherData: weatherData!);
-    } else if (!firstFetch) {
-      content = const Text("Aucune donnée / erreur");
-    }
+    WeatherCubit cubit = context.read<WeatherCubit>();
 
     Widget? action;
-    if (!firstFetch) {
-      action = IconButton(
-        onPressed: reset,
-        icon: const Icon(Icons.clear),
-      );
-    }
+
+    action = IconButton(
+      onPressed: () {
+        cubit.reset();
+      },
+      icon: const Icon(Icons.clear),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -128,22 +83,32 @@ class _WeatherHomeState extends State<WeatherHome> {
         leading: action,
       ),
       body: Center(
-        child: content,
+        child: BlocBuilder<WeatherCubit, WeatherState>(
+          builder: (context, state) {
+            if (state is WeatherInitial) {
+              return buildForm(context);
+            } else if (state is WeatherLoading) {
+              return const CircularProgressIndicator();
+            } else if (state is WeatherLoaded) {
+              return WeatherDisplay(weatherData: state.weatherData);
+            } else if (state is WeatherError) {
+              return Text(state.message);
+            }
+
+            return Text("$state");
+          },
+        ),
       ),
-      floatingActionButton: firstFetch
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: loading ? null : fetchData,
-              label: loading
-                  ? const CircularProgressIndicator()
-                  : const Text("Rafraîchir"),
-              icon: loading ? null : const Icon(Icons.refresh),
-              disabledElevation: 0,
-            ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => fetchData(cubit),
+        label: const Text("Rafraîchir"),
+        icon: const Icon(Icons.refresh),
+        disabledElevation: 0,
+      ),
     );
   }
 
-  Widget buildForm() {
+  Widget buildForm(BuildContext context) {
     return Column(
       children: [
         Padding(
@@ -172,7 +137,11 @@ class _WeatherHomeState extends State<WeatherHome> {
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: latValid && lngValid ? fetchData : null,
+          onPressed: latValid && lngValid
+              ? () {
+                  fetchData(context.read<WeatherCubit>());
+                }
+              : null,
           child: const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text("Charger les données"),
