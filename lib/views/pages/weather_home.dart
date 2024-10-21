@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather_app_1/cubit/config_cubit.dart';
 import 'package:weather_app_1/cubit/weather_cubit.dart';
 import 'package:weather_app_1/models/weather_data.dart';
 import 'package:weather_app_1/services/weather_service.dart';
@@ -65,6 +66,7 @@ class _WeatherHomeState extends State<WeatherHome> {
   @override
   Widget build(BuildContext context) {
     WeatherCubit cubit = context.read<WeatherCubit>();
+    ConfigCubit configCubit = context.read<ConfigCubit>();
 
     Widget? action;
 
@@ -81,6 +83,16 @@ class _WeatherHomeState extends State<WeatherHome> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         leading: action,
+        actions: [
+          IconButton(
+            onPressed: () {
+              configCubit.toggleDarkMode();
+            },
+            icon: configCubit.state.isDarkMode
+                ? const Icon(Icons.light_mode)
+                : const Icon(Icons.dark_mode),
+          )
+        ],
       ),
       body: Center(
         child: BlocBuilder<WeatherCubit, WeatherState>(
@@ -111,6 +123,9 @@ class _WeatherHomeState extends State<WeatherHome> {
   Widget buildForm(BuildContext context) {
     return Column(
       children: [
+        const SizedBox(
+          height: 16,
+        ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(

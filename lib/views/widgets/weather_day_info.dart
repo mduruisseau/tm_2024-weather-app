@@ -20,8 +20,10 @@ class WeatherDayInfo extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child:
-                  WeatherImage(weatherCode: weatherDay.weatherCode, size: 80),
+              child: WeatherImage(
+                weatherCode: weatherDay.weatherCode,
+                size: 80,
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
