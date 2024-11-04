@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app_1/cubit/config_cubit.dart';
 import 'package:weather_app_1/cubit/weather_cubit.dart';
-import 'package:weather_app_1/models/weather_data.dart';
-import 'package:weather_app_1/services/weather_service.dart';
 import 'package:weather_app_1/views/widgets/coordinate_form_field.dart';
 import 'package:weather_app_1/views/widgets/weather_display.dart';
 
@@ -68,55 +66,55 @@ class _WeatherHomeState extends State<WeatherHome> {
     WeatherCubit cubit = context.read<WeatherCubit>();
     ConfigCubit configCubit = context.read<ConfigCubit>();
 
-    Widget? action;
+    return BlocBuilder<WeatherCubit, WeatherState>(
+      builder: (context, state) {
+        Widget child = Text("$state");
 
-    action = IconButton(
-      onPressed: () {
-        cubit.reset();
+        if (state is WeatherInitial) {
+          child = buildForm(context);
+        } else if (state is WeatherLoading) {
+          child = const CircularProgressIndicator();
+        } else if (state is WeatherLoaded) {
+          child = WeatherDisplay(weatherData: state.weatherData);
+        } else if (state is WeatherError) {
+          child = Text(state.message);
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Météo"),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            actions: [
+              if (cubit.state is! WeatherInitial) ...{
+                IconButton(
+                  onPressed: () {
+                    cubit.reset();
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
+              },
+              IconButton(
+                onPressed: () {
+                  configCubit.toggleDarkMode();
+                },
+                icon: configCubit.state.isDarkMode
+                    ? const Icon(Icons.light_mode)
+                    : const Icon(Icons.dark_mode),
+              )
+            ],
+          ),
+          body: Center(
+            child: child,
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () => fetchData(cubit),
+            label: const Text("Rafraîchir"),
+            icon: const Icon(Icons.refresh),
+            disabledElevation: 0,
+          ),
+        );
       },
-      icon: const Icon(Icons.clear),
-    );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Météo"),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        leading: action,
-        actions: [
-          IconButton(
-            onPressed: () {
-              configCubit.toggleDarkMode();
-            },
-            icon: configCubit.state.isDarkMode
-                ? const Icon(Icons.light_mode)
-                : const Icon(Icons.dark_mode),
-          )
-        ],
-      ),
-      body: Center(
-        child: BlocBuilder<WeatherCubit, WeatherState>(
-          builder: (context, state) {
-            if (state is WeatherInitial) {
-              return buildForm(context);
-            } else if (state is WeatherLoading) {
-              return const CircularProgressIndicator();
-            } else if (state is WeatherLoaded) {
-              return WeatherDisplay(weatherData: state.weatherData);
-            } else if (state is WeatherError) {
-              return Text(state.message);
-            }
-
-            return Text("$state");
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => fetchData(cubit),
-        label: const Text("Rafraîchir"),
-        icon: const Icon(Icons.refresh),
-        disabledElevation: 0,
-      ),
     );
   }
 

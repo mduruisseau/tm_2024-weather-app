@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:weather_app_1/cubit/config_cubit.dart';
 import 'package:weather_app_1/cubit/weather_cubit.dart';
 import 'package:weather_app_1/cubit/weather_day_cubit.dart';
-import 'package:weather_app_1/views/pages/weather_home.dart';
+import 'package:weather_app_1/configs/router.config.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR', null);
@@ -33,8 +33,7 @@ class WeatherApp extends StatelessWidget {
       ],
       child: BlocBuilder<ConfigCubit, ConfigState>(
         builder: (context, state) {
-          return MaterialApp(
-            home: const WeatherHome(),
+          return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'Weather App',
             theme: ThemeData(
@@ -43,6 +42,7 @@ class WeatherApp extends StatelessWidget {
                   ? const ColorScheme.dark()
                   : ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             ),
+            routerConfig: RoutesConfig.routes,
           );
         },
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app_1/cubit/config_cubit.dart';
 import 'package:weather_app_1/models/weather_day.dart';
 import 'package:weather_app_1/views/widgets/weather_day_info.dart';
+import 'package:go_router/go_router.dart';
 
 class WeatherDayDetail extends StatelessWidget {
   final WeatherDay weatherDay;
@@ -40,6 +41,14 @@ class WeatherDayDetail extends StatelessWidget {
             child: Text(
               'Plus d\'informations sur ce jour...',
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                context.pop();
+              },
+              child: const Text("Retour"),
             ),
           ),
         ],

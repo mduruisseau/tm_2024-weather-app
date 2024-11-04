@@ -1,15 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:weather_app_1/cubit/config_cubit.dart';
 import 'package:weather_app_1/cubit/weather_day_cubit.dart';
 import 'package:weather_app_1/models/weather_data.dart';
 import 'package:weather_app_1/models/weather_day.dart';
-import 'package:weather_app_1/views/pages/weather_day_detail.dart';
 import 'package:weather_app_1/views/widgets/weather_current_info.dart';
 import 'package:weather_app_1/views/widgets/weather_day_button.dart';
 import 'package:weather_app_1/views/widgets/weather_day_info.dart';
-import 'package:weather_app_1/views/widgets/weather_image.dart';
+import 'package:go_router/go_router.dart';
 
 class WeatherDisplay extends StatelessWidget {
   const WeatherDisplay({
@@ -55,14 +54,7 @@ class WeatherDisplay extends StatelessWidget {
           child: const Text("Reset"),
         ),
         const Divider(),
-        BlocConsumer<WeatherDayCubit, WeatherDayState>(
-          listener: (context, state) {
-            // if (state is WeatherDaySelected) {
-            //   context
-            //       .read<ConfigCubit>()
-            //       .setDarkMode(state.weatherDay.weatherCode >= 3);
-            // }
-          },
+        BlocBuilder<WeatherDayCubit, WeatherDayState>(
           builder: (context, state) {
             if (state is WeatherDaySelected) {
               return Column(
@@ -72,12 +64,9 @@ class WeatherDisplay extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => WeatherDayDetail(
-                            weatherDay: state.weatherDay,
-                          ),
-                        ),
+                      context.go(
+                        '/details/',
+                        extra: jsonEncode(state.weatherDay.toJson()),
                       );
                     },
                     child: const Text("Voir +"),
