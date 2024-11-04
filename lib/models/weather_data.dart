@@ -3,6 +3,7 @@ import 'package:weather_app_1/models/weather_current.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:weather_app_1/models/weather_daily.dart';
 import 'package:weather_app_1/models/weather_day.dart';
+import 'package:weather_app_1/models/weather_hourly.dart';
 
 part 'weather_data.g.dart';
 
@@ -15,12 +16,14 @@ class WeatherData {
   final WeatherCurrent currentWeather;
 
   final WeatherDaily daily;
+  final WeatherHourly hourly;
 
   WeatherData({
     required this.latitude,
     required this.longitude,
     required this.currentWeather,
     required this.daily,
+    required this.hourly,
   });
 
   WeatherDay getDayIndex(int index) {
@@ -34,6 +37,7 @@ class WeatherData {
       sunrise: daily.sunrise[index],
       sunset: daily.sunset[index],
       uvIndexMax: daily.uvIndexMax[index],
+      hours: hourly.getDay(day: daily.time[index]),
     );
   }
 

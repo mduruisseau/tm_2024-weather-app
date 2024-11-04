@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:weather_app_1/models/weather_hour.dart';
 
 part 'weather_day.g.dart';
 
@@ -21,6 +22,8 @@ class WeatherDay {
 
   final double uvIndexMax;
 
+  final List<WeatherHour> hours;
+
   WeatherDay({
     required this.time,
     required this.weatherCode,
@@ -31,6 +34,7 @@ class WeatherDay {
     required this.daylightDuration,
     required this.precipitationSum,
     required this.uvIndexMax,
+    this.hours = const [],
   });
 
   DateTime get day => DateTime.parse(time);

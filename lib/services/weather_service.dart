@@ -40,6 +40,14 @@ class WeatherService {
         'uv_index_max',
         'precipitation_sum'
       ].join(','),
+      'hourly': [
+        'temperature_2m',
+        'apparent_temperature',
+        'rain',
+        'weathercode',
+        'windspeed_10m',
+        'winddirection_10m'
+      ].join(','),
     });
 
     return WeatherData.fromJson(response.data);

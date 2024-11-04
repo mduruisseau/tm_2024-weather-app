@@ -8,6 +8,7 @@ part 'weather_day_state.dart';
 
 class WeatherDayCubit extends Cubit<WeatherDayState> {
   StorageService storageService = StorageService();
+
   WeatherDayCubit() : super(WeatherDayInitial()) {
     init();
   }
