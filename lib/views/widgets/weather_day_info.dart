@@ -18,11 +18,14 @@ class WeatherDayInfo extends StatelessWidget {
         ),
         Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: WeatherImage(
-                weatherCode: weatherDay.weatherCode,
-                size: 80,
+            Hero(
+              tag: 'img-${weatherDay.time}',
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: WeatherImage(
+                  weatherCode: weatherDay.weatherCode,
+                  size: 80,
+                ),
               ),
             ),
             Column(
