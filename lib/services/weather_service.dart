@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:weather_app_1/models/weather_data.dart';
 
+@singleton
 class WeatherService {
-  final Dio dio = GetIt.instance<Dio>();
+  final Dio dio;
+
+  WeatherService({required this.dio});
 
   Future<WeatherData> fetchWeatherData({
     required double lat,

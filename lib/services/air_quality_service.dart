@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:weather_app_1/models/weather_air_quality.dart';
 
+@singleton
 class AirQualityService {
-  final Dio dio = GetIt.instance<Dio>();
+  final Dio dio;
+
+  AirQualityService({required this.dio});
 
   Future<WeatherAirQuality> fetchQualityData({
     required String day,
