@@ -1,10 +1,12 @@
 import 'package:bloc/bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:weather_app_1/cubit/air_quality_state.dart';
 import 'package:weather_app_1/models/weather_air_quality.dart';
 import 'package:weather_app_1/services/air_quality_service.dart';
 
 class AirQualityCubit extends Cubit<AirQualityState> {
-  final AirQualityService airQualityService = AirQualityService();
+  final AirQualityService airQualityService =
+      GetIt.instance<AirQualityService>();
 
   AirQualityCubit() : super(AirQualityInitial());
 

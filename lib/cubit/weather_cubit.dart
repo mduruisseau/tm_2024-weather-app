@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:meta/meta.dart';
 import 'package:weather_app_1/models/weather_data.dart';
 import 'package:weather_app_1/services/weather_service.dart';
@@ -6,7 +7,7 @@ import 'package:weather_app_1/services/weather_service.dart';
 part 'weather_state.dart';
 
 class WeatherCubit extends Cubit<WeatherState> {
-  final WeatherService weatherService = WeatherService();
+  final WeatherService weatherService = GetIt.instance<WeatherService>();
 
   WeatherCubit() : super(WeatherInitial());
 

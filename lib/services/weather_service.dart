@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:weather_app_1/models/weather_data.dart';
 
 class WeatherService {
-  final Dio dio = Dio();
+  final Dio dio = GetIt.instance<Dio>();
 
   Future<WeatherData> fetchWeatherData({
     required double lat,

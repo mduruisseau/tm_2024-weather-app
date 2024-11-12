@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:weather_app_1/models/weather_air_quality.dart';
 
 class AirQualityService {
-  final Dio dio = Dio();
+  final Dio dio = GetIt.instance<Dio>();
 
   Future<WeatherAirQuality> fetchQualityData({
     required String day,
